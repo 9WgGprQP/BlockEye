@@ -26,30 +26,18 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health check
+// Health check per Railway
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Function routes - matching Supabase edge function URLs
-app.all('/functions/v1/update-latest-snapshots', updateLatestSnapshots);
-app.all('/functions/v1/health-check', healthCheck);
-// app.all('/functions/v1/Snapshot-EVM', snapshotEVM);
-// app.all('/functions/v1/Snapshot-NEAR', snapshotNEAR);
-// app.all('/functions/v1/Snapshot-Solana', snapshotSolana);
-// app.all('/functions/v1/Snapshot-Ripple', snapshotRipple);
-// app.all('/functions/v1/Snapshot-Aventus', snapshotAventus);
-// app.all('/functions/v1/Snapshot-Algorand', snapshotAlgorand);
-// app.all('/functions/v1/update-defi-investment', updateDefiInvestment);
-// app.all('/functions/v1/token-change-detector', tokenChangeDetector);
-// app.all('/functions/v1/history-snapshot', historySnapshot);
-// app.all('/functions/v1/prices_update', pricesUpdate);
-
-// Root route
+// Health check root per Railway
 app.get('/', (req, res) => {
   res.json({
+    status: 'ok',
     message: 'BlockEye Edge Functions API',
     version: '1.0.0',
+    timestamp: new Date().toISOString(),
     functions: [
       'update-latest-snapshots',
       'health-check'
@@ -66,6 +54,22 @@ app.get('/', (req, res) => {
     ]
   });
 });
+
+// Function routes - matching Supabase edge function URLs
+app.all('/functions/v1/update-latest-snapshots', updateLatestSnapshots);
+app.all('/functions/v1/health-check', healthCheck);
+// app.all('/functions/v1/Snapshot-EVM', snapshotEVM);
+// app.all('/functions/v1/Snapshot-NEAR', snapshotNEAR);
+// app.all('/functions/v1/Snapshot-Solana', snapshotSolana);
+// app.all('/functions/v1/Snapshot-Ripple', snapshotRipple);
+// app.all('/functions/v1/Snapshot-Aventus', snapshotAventus);
+// app.all('/functions/v1/Snapshot-Algorand', snapshotAlgorand);
+// app.all('/functions/v1/update-defi-investment', updateDefiInvestment);
+// app.all('/functions/v1/token-change-detector', tokenChangeDetector);
+// app.all('/functions/v1/history-snapshot', historySnapshot);
+// app.all('/functions/v1/prices_update', pricesUpdate);
+
+// Root route rimossa (ora è sopra)
 
 // Error handling middleware
 app.use((err, req, res, next) => {
