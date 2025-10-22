@@ -31,6 +31,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Readiness check per Railway
+app.get('/ready', (req, res) => {
+  res.json({ 
+    status: 'ready', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Health check root per Railway
 app.get('/', (req, res) => {
   res.json({
@@ -85,10 +94,30 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Function not found' });
 });
 
-app.listen(PORT, () => {
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
+const server = app.listen(PORT, () => {
   console.log(`BlockEye Edge Functions server running on port ${PORT}`);
   console.log(`Available functions:`);
   console.log(`- update-latest-snapshots`);
   console.log(`- health-check`);
   console.log(`(Other functions will be added progressively)`);
+  
+  // Signal to Railway that the app is ready
+  if (process.env.RAILWAY_ENVIRONMENT) {
+    console.log('Running on Railway environment');
+  }
 });
+
+// Keep the server alive
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
